@@ -1,0 +1,122 @@
+[
+ {
+  "leagueId": 4821,
+  "leagueName": "1. Fußball-Bundesliga 2025/2026",
+  "leagueShortcut": "bl1",
+  "leagueSeason": "2025",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4937,
+  "leagueName": "1. Fußball-Bundesliga 2026/2027",
+  "leagueShortcut": "bl1",
+  "leagueSeason": "2026",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4806,
+  "leagueName": "2. Fußball-Bundesliga 2025/2026",
+  "leagueShortcut": "bl2",
+  "leagueSeason": "2025",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4938,
+  "leagueName": "2. Fußball-Bundesliga 2026/2027",
+  "leagueShortcut": "bl2",
+  "leagueSeason": "2026",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4848,
+  "leagueName": "DFB Pokal 2025/2026",
+  "leagueShortcut": "dfb",
+  "leagueSeason": "2025",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4945,
+  "leagueName": "DFB Pokal 2026/2027",
+  "leagueShortcut": "dfb",
+  "leagueSeason": "2026",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4857,
+  "leagueName": "3. Liga 2025/2026",
+  "leagueShortcut": "bl3",
+  "leagueSeason": "2025",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4939,
+  "leagueName": "3. Liga 2026/2027",
+  "leagueShortcut": "bl3",
+  "leagueSeason": "2026",
+  "sport": {
+   "sportId": 1,
+   "sportName": "Fußball"
+  }
+ },
+ {
+  "leagueId": 4849,
+  "leagueName": "DEL 2025/2026",
+  "leagueShortcut": "del",
+  "leagueSeason": "2025",
+  "sport": {
+   "sportId": 2,
+   "sportName": "Eishockey"
+  }
+ },
+ {
+  "leagueId": 4947,
+  "leagueName": "DEL 2026/2027",
+  "leagueShortcut": "del",
+  "leagueSeason": "2026",
+  "sport": {
+   "sportId": 2,
+   "sportName": "Eishockey"
+  }
+ },
+ {
+  "leagueId": 858,
+  "leagueName": "Handball Bundesliga 2015/2016",
+  "leagueShortcut": "hbl",
+  "leagueSeason": "2015",
+  "sport": {
+   "sportId": 4,
+   "sportName": "Handball"
+  }
+ },
+ {
+  "leagueId": 2973,
+  "leagueName": "Handball Bundesliga 2016/2017",
+  "leagueShortcut": "hbl",
+  "leagueSeason": "2016",
+  "sport": {
+   "sportId": 4,
+   "sportName": "Handball"
+  }
+ }
+]
