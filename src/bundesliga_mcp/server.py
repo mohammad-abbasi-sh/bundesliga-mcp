@@ -20,7 +20,7 @@ current matchday. Scores come from the match results (half-time and \
 final); top scorers are aggregated from the per-match goal events, \
 because the API's own goalscorer endpoint returns 404. Data is under \
 the Open Database License (ODbL). Built by Mohammad Abbasi \
-(mohammad-abbasi-sh) — Germany MCP factory.\
+(mohammad-abbasi-sh) — https://almanibama.ir · https://mabbasi.ir — Germany MCP factory.\
 """
 
 mcp = FastMCP("bundesliga-mcp", instructions=INSTRUCTIONS)
