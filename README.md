@@ -65,3 +65,7 @@ Tests: 27/27 green (20 offline + 7 live, 2026-11-09).
 ## License
 
 MIT
+
+---
+
+Built by [Mohammad Abbasi](https://github.com/mohammad-abbasi-sh) — [Almanibama](https://almanibama.ir) · [mabbasi.ir](https://mabbasi.ir)
