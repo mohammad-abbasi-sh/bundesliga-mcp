@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 import sys
 
 from mcp.server.fastmcp import FastMCP
@@ -23,6 +24,22 @@ the Open Database License (ODbL). Built by Mohammad Abbasi \
 (mohammad-abbasi-sh) — https://almanibama.ir · https://mabbasi.ir — Germany MCP factory.\
 """
 
+
+_SOURCE = "api.openligadb.de"
+_DISCLAIMER = "Unofficial read-only data from api.openligadb.de; verify on the site before acting on it."
+
+
+def _envelope() -> dict:
+    return {
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "source": _SOURCE,
+        "disclaimer": _DISCLAIMER,
+    }
+
+
+def _ok(payload: dict) -> str:
+    return json.dumps({**_envelope(), **payload}, ensure_ascii=False)
+
 mcp = FastMCP("bundesliga-mcp", instructions=INSTRUCTIONS)
 
 _SEASON_CACHE: dict[str, str] = {}
@@ -43,7 +60,7 @@ def _resolve_season(league: str) -> str:
 
 
 def _err(e: Exception) -> str:
-    return json.dumps({"error": str(e)}, ensure_ascii=False)
+    return _ok({"error": str(e)})
 
 
 
@@ -55,15 +72,12 @@ bl3, dfb, del, bbl, hbl)."""
         rows = _fb.latest_leagues(_http.fetch_leagues())
     except _http.BundesligaError as e:
         return _err(e)
-    return json.dumps(
-        {
+    return _ok({
             "count": len(rows),
             "leagues": rows,
             "note": "bbl/hbl have no league entry published yet — their "
             "tools return empty results until the API publishes them.",
-        },
-        ensure_ascii=False,
-    )
+        })
 
 
 @mcp.tool()
@@ -80,24 +94,18 @@ season: e.g. "2026" (default: current). matchday: 1..34 (default: current)."""
             md = (matches[0].get("group") or {}).get("groupOrderID") if matches else None
         else:
             if not 1 <= matchday <= 40:
-                return json.dumps(
-                    {"error": f"matchday out of range: {matchday} (expected 1..40)"},
-                    ensure_ascii=False,
-                )
+                return _ok({"error": f"matchday out of range: {matchday} (expected 1..40)"})
             matches = _http.fetch_matchday(lg, se, matchday)
             md = matchday
     except (_http.BundesligaError, ValueError) as e:
         return _err(e)
-    return json.dumps(
-        {
+    return _ok({
             "league": lg,
             "season": se,
             "matchday": md,
             "count": len(matches),
             "matches": [_fb.compact_match(m) for m in matches],
-        },
-        ensure_ascii=False,
-    )
+        })
 
 
 @mcp.tool()
@@ -111,16 +119,13 @@ each match. league: bl1/bl2/bl3/dfb/del/bbl/hbl."""
         return _err(e)
     season = str(matches[0].get("leagueSeason")) if matches else ""
     md = (matches[0].get("group") or {}).get("groupOrderID") if matches else None
-    return json.dumps(
-        {
+    return _ok({
             "league": lg,
             "season": season,
             "matchday": md,
             "count": len(matches),
             "matches": [_fb.compact_match(m) for m in matches],
-        },
-        ensure_ascii=False,
-    )
+        })
 
 
 @mcp.tool()
@@ -133,10 +138,7 @@ def bundesliga_get_table(league: str = "bl1", season: str | None = None) -> str:
         rows = _http.fetch_table(lg, se)
     except (_http.BundesligaError, ValueError) as e:
         return _err(e)
-    return json.dumps(
-        {"league": lg, "season": se, "count": len(rows), "table": _fb.compact_table(rows)},
-        ensure_ascii=False,
-    )
+    return _ok({"league": lg, "season": se, "count": len(rows), "table": _fb.compact_table(rows)})
 
 
 @mcp.tool()
@@ -150,22 +152,16 @@ goals excluded). league: bl1/bl2/bl3/dfb/del/bbl/hbl. season: e.g. "2026" \
         lg = _fb.validate_league(league)
         se = season.strip() if season else _resolve_season(lg)
         if not 1 <= limit <= 50:
-            return json.dumps(
-                {"error": f"limit out of range: {limit} (expected 1..50)"},
-                ensure_ascii=False,
-            )
+            return _ok({"error": f"limit out of range: {limit} (expected 1..50)"})
         matches = _http.fetch_matches(lg, se)
     except (_http.BundesligaError, ValueError) as e:
         return _err(e)
-    return json.dumps(
-        {
+    return _ok({
             "league": lg,
             "season": se,
             "count": len(matches),
             "scorers": _fb.top_scorers(matches, limit),
-        },
-        ensure_ascii=False,
-    )
+        })
 
 
 @mcp.tool()
@@ -188,16 +184,21 @@ bl1/bl2/bl3/dfb/del/bbl/hbl. season: e.g. "2026" (default: current)."""
             detail["venue"] = loc.get("locationCity") or ""
             detail["stadium"] = loc.get("locationStadium") or ""
             detail["viewers"] = m.get("numberOfViewers")
-            return json.dumps(
-                {"league": lg, "season": se, **detail}, ensure_ascii=False
-            )
-    return json.dumps(
-        {
+            return _ok({"league": lg, "season": se, **detail})
+    return _ok({
             "error": f"match {match_id} not found in {lg} season {se}",
             "hint": "use bundesliga_get_fixtures first to get a valid match_id",
-        },
-        ensure_ascii=False,
-    )
+        })
+
+
+@mcp.tool()
+def bundesliga_health() -> str:
+    """Check whether api.openligadb.de is reachable right now.
+
+    Returns status ok (HTTP 200), blocked (HTTP 403/429 — bot wall or
+    rate limit) or error, plus the HTTP status and the probed URL.
+    One polite request; it does not fetch any listings."""
+    return _ok(_http.health_check())
 
 
 def main() -> None:
