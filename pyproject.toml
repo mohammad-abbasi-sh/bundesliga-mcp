@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bundesliga-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Unofficial read-only MCP server for German football — Bundesliga fixtures, live scores, tables and top scorers"
 readme = "README.md"
 license = { text = "MIT" }
