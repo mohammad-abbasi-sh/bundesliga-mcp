@@ -6,6 +6,7 @@ project; data is under the Open Database License (ODbL).
 from __future__ import annotations
 
 import os
+import time
 import ssl
 
 import httpx
@@ -53,15 +54,32 @@ def _client() -> httpx.Client:
 
 
 def _get_json(url: str) -> list:
-    try:
-        with _client() as c:
-            r = c.get(url)
-    except httpx.HTTPError as e:
-        raise BundesligaError(f"network error fetching {url}: {e}") from e
+    last_exc: Exception | None = None
+    r: httpx.Response | None = None
+    for attempt in range(2):
+        try:
+            with _client() as c:
+                r = c.get(url)
+        except httpx.HTTPError as e:
+            last_exc = e
+            if attempt == 0:
+                time.sleep(1.0)
+                continue
+            raise BundesligaError(f"network error fetching {url}: {e}") from e
+        if r.status_code in (429, 500, 502, 503):
+            if attempt == 0:
+                time.sleep(1.0)
+                continue
+        break
+    assert r is not None  # loop always assigns r or raises
     if r.status_code == 404:
         raise BundesligaError(
             f"OpenLigaDB returned 404 for {url} (no data published for this "
             "league/season yet)"
+        )
+    if r.status_code == 429:
+        raise BundesligaError(
+            "OpenLigaDB rate-limited the request (HTTP 429) — try again later"
         )
     if r.status_code != 200:
         raise BundesligaError(f"OpenLigaDB returned HTTP {r.status_code} for {url}")
@@ -72,6 +90,7 @@ def _get_json(url: str) -> list:
     if not isinstance(data, list):
         raise BundesligaError(f"unexpected OpenLigaDB response shape for {url}")
     return data
+
 
 
 def fetch_leagues() -> list:
@@ -97,3 +116,23 @@ def fetch_current_matchday(league: str) -> list:
 def fetch_table(league: str, season: str) -> list:
     """League table (getbltable/{league}/{season})."""
     return _get_json(f"{BASE}/getbltable/{league}/{season}")
+
+
+def health_check() -> dict:
+    """One polite probe of the source site.
+
+    Returns {"status": "ok"|"blocked"|"error", "http_status": int|None,
+    "url": ..., "detail": ...}. Used by the `bundesliga_health` tool
+    and the daily smoke CI. Added 2026-11-10 (fleet audit fix).
+    """
+    url = "https://api.openligadb.de/getavailableleagues"
+    try:
+        fetch_leagues()
+    except BundesligaError as e:
+        msg = str(e)
+        if "403" in msg:
+            return {"status": "blocked", "http_status": 403, "url": url, "detail": msg}
+        if "429" in msg:
+            return {"status": "blocked", "http_status": 429, "url": url, "detail": msg}
+        return {"status": "error", "http_status": None, "url": url, "detail": msg}
+    return {"status": "ok", "http_status": 200, "url": url}
