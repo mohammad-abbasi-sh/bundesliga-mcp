@@ -15,7 +15,7 @@ Add to your MCP client config (stdio):
   "mcpServers": {
     "bundesliga": {
       "command": "uvx",
-      "args": ["bundesliga-mcp"]
+      "args": ["bundesliga-mcp==0.1.0"]
     }
   }
 }
