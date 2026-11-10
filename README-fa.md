@@ -13,7 +13,7 @@
   "mcpServers": {
     "bundesliga": {
       "command": "uvx",
-      "args": ["bundesliga-mcp==0.1.0"]
+      "args": ["bundesliga-mcp==0.1.1"]
     }
   }
 }
