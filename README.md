@@ -64,7 +64,7 @@ Tests: 27/27 green (20 offline + 7 live, 2026-11-09).
 
 ## License
 
-MIT
+[PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/) — free for personal and non-commercial use; commercial use needs a separate license (see LICENSE).
 
 ---
 
